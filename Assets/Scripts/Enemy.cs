@@ -2,33 +2,48 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-
     public float moveSpeed;
     public Transform player;
     public float enemyHealth;
-    
+    private Rigidbody2D rb;
+    private Animator animator;
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
-        Vector2 direction = (player.position - transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
-
-        if(enemyHealth <=0)
+        if (enemyHealth <= 0)
         {
             Destroy(gameObject);
+            return;
+        }
+
+        Vector2 moveDirection = (player.position - transform.position).normalized;
+        rb.linearVelocity = moveDirection * moveSpeed;
+
+        if (rb.linearVelocity.sqrMagnitude > 0.01f)
+        {
+            animator.SetBool("isMoving", true);
+            animator.SetFloat("MoveX", moveDirection.x);
+            animator.SetFloat("MoveY", moveDirection.y);
+        }
+        else
+        {
+            animator.SetBool("isMoving", false);
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Bullet")
+        if (collision.gameObject.CompareTag("Bullet"))
         {
             enemyHealth--;
-            
+            Destroy(collision.gameObject);
         }
     }
 }
