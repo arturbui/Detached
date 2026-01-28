@@ -13,10 +13,10 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Enemy
+  - Enemy Bullet
+  - Player Bullet
   - 
   - 
   - 
@@ -48,6 +48,9 @@ TagManager:
     locked: 0
   - name: Entities
     uniqueID: 1690521273
+    locked: 0
+  - name: Foreground Layer
+    uniqueID: 902182023
     locked: 0
   m_RenderingLayers:
   - Default

@@ -7,6 +7,10 @@ public class Enemy : MonoBehaviour
     public float enemyHealth;
     private Rigidbody2D rb;
     private Animator animator;
+    public GameObject enemyBulletPrefab;
+    public Transform firePoint;
+    public float fireRate = 1.0f;
+    private float nextFireTime;
 
     void Start()
     {
@@ -26,6 +30,9 @@ public class Enemy : MonoBehaviour
         Vector2 moveDirection = (player.position - transform.position).normalized;
         rb.linearVelocity = moveDirection * moveSpeed;
 
+        float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+        firePoint.rotation = Quaternion.Euler(0, 0, angle - 90f);
+
         if (rb.linearVelocity.sqrMagnitude > 0.01f)
         {
             animator.SetBool("isMoving", true);
@@ -36,6 +43,12 @@ public class Enemy : MonoBehaviour
         {
             animator.SetBool("isMoving", false);
         }
+
+        if (Time.time > nextFireTime)
+        {
+            Shoot();
+            nextFireTime = Time.time + fireRate;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -45,5 +58,12 @@ public class Enemy : MonoBehaviour
             enemyHealth--;
             Destroy(collision.gameObject);
         }
+
+    }
+    
+
+    void Shoot()
+    {
+        Instantiate(enemyBulletPrefab, firePoint.position, firePoint.rotation);
     }
 }
