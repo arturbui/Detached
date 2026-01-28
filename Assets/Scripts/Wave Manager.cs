@@ -10,7 +10,9 @@ public class WaveManager : MonoBehaviour
     public List<int> waves = new List<int> { 3, 5, 8 };
 
     [Header("Gate Settings")]
-    public GameObject gate; 
+    public GameObject gate;
+    public GameObject gateCamera;
+    public float cameraWaitTime = 2.0f;
 
     private int currentWaveIndex = 0;
     private bool spawning = false;
@@ -18,8 +20,8 @@ public class WaveManager : MonoBehaviour
 
     void Update()
     {
-        
         if (allWavesCleared) return;
+
         if (!spawning && GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
         {
             if (currentWaveIndex < waves.Count)
@@ -28,7 +30,7 @@ public class WaveManager : MonoBehaviour
             }
             else
             {
-                OpenGate();
+                StartCoroutine(ProcessGateOpening());
             }
         }
     }
@@ -36,32 +38,52 @@ public class WaveManager : MonoBehaviour
     IEnumerator SpawnWave()
     {
         spawning = true;
-        Debug.Log("Starting Wave " + (currentWaveIndex + 1));
+        int enemiesToSpawn = waves[currentWaveIndex];
+        List<int> availableIndices = new List<int>();
 
-        for (int i = 0; i < waves[currentWaveIndex]; i++)
+        for (int i = 0; i < enemiesToSpawn; i++)
         {
-            Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-            Instantiate(enemyPrefab, randomPoint.position, Quaternion.identity);
-            yield return new WaitForSeconds(0.5f);
+            if (availableIndices.Count == 0)
+            {
+                for (int j = 0; j < spawnPoints.Length; j++) availableIndices.Add(j);
+            }
+
+            int randomIndex = Random.Range(0, availableIndices.Count);
+            int spawnPointIndex = availableIndices[randomIndex];
+            availableIndices.RemoveAt(randomIndex);
+
+            Transform selectedPoint = spawnPoints[spawnPointIndex];
+            Vector3 jitter = new Vector3(Random.Range(-0.7f, 0.7f), Random.Range(-0.7f, 0.7f), 0);
+            Instantiate(enemyPrefab, selectedPoint.position + jitter, Quaternion.identity);
+
+            yield return new WaitForSeconds(0.4f);
         }
 
         currentWaveIndex++;
         spawning = false;
     }
 
-    void OpenGate()
+    IEnumerator ProcessGateOpening()
     {
         allWavesCleared = true;
-        Debug.Log("All waves complete! Opening gate.");
+
+        if (gateCamera != null) gateCamera.SetActive(true);
+
+        yield return new WaitForSeconds(2.0f);
 
         if (gate != null)
         {
             Animator anim = gate.GetComponent<Animator>();
             if (anim != null) anim.SetTrigger("open");
+
             BoxCollider2D col = gate.GetComponent<BoxCollider2D>();
             if (col != null) col.enabled = false;
         }
 
-        this.enabled = false; 
+        yield return new WaitForSeconds(cameraWaitTime);
+
+        if (gateCamera != null) gateCamera.SetActive(false);
+
+        this.enabled = false;
     }
 }
