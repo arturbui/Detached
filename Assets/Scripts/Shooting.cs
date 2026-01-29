@@ -16,13 +16,11 @@ public class Shooting : MonoBehaviour
 
     void Shoot()
     {
-        // 1. Play the sound immediately when the button is pressed
         if (AudioManager.instance != null)
         {
             AudioManager.instance.PlaySFX(AudioManager.instance.playerBullet);
         }
 
-        // 2. Spawn and launch the bullet
         GameObject bullet = Instantiate(bulletPrefab, shooting.position, shooting.rotation);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
 
