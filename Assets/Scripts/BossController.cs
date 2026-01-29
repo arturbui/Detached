@@ -72,6 +72,10 @@ public class BossController : MonoBehaviour
 
     void Shoot()
     {
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX(AudioManager.instance.bossLazer);
+        }
         Instantiate(laserPrefab, firePoint.position, firePoint.rotation);
     }
 }

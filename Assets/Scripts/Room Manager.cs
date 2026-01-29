@@ -37,6 +37,7 @@ public class RoomManager : MonoBehaviour
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         if (enemies.Length == 0 && currentWaveCount >= totalWaves)
         {
+            
             OpenGate();
         }
         else if (enemies.Length == 0 && currentWaveCount < totalWaves)
@@ -49,6 +50,16 @@ public class RoomManager : MonoBehaviour
     {
         roomCleared = true;
         Debug.Log("All Waves Cleared! Gate is opening.");
+
+        if (AudioManager.instance == null)
+        {
+            Debug.LogError("ROOM MANAGER ERROR: I can't find the AudioManager instance!");
+        }
+        else
+        {
+            Debug.Log("RoomManager is now calling PlaySFX...");
+            AudioManager.instance.PlaySFX(AudioManager.instance.gateOpen);
+        }
 
         Animator anim = gate.GetComponent<Animator>();
         if (anim != null)

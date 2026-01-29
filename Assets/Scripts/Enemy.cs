@@ -56,11 +56,16 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject.CompareTag("Bullet"))
         {
             enemyHealth--;
+            AudioManager.instance.PlaySFX(AudioManager.instance.enemyHit);
             Destroy(collision.gameObject);
         }
 
     }
-    
+    public void TakeDamage(int amount)
+    {
+        
+    }
+
 
     void Shoot()
     {

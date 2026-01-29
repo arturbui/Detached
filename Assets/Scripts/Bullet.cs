@@ -4,19 +4,27 @@ public class Bullet : MonoBehaviour
 {
     public float bulletRange = 5f;
     public float bulletSpeed = 10f;
+    public int damage = 1;
     private Vector3 startPosition;
 
     void Start()
     {
         startPosition = transform.position;
         GetComponent<Rigidbody2D>().linearVelocity = transform.up * bulletSpeed;
+        if (gameObject.layer == LayerMask.NameToLayer("PlayerBullet"))
+        {
+            Debug.Log("Player Bullet Sound Triggered");
+            AudioManager.instance.PlaySFX(AudioManager.instance.playerBullet);
+        }
+        else
+        {
+            AudioManager.instance.PlaySFX(AudioManager.instance.enemyBullet);
+        }
     }
 
     void Update()
     {
-        float distanceTraveled = Vector3.Distance(startPosition, transform.position);
-
-        if (distanceTraveled >= bulletRange)
+        if (Vector3.Distance(startPosition, transform.position) >= bulletRange)
         {
             Destroy(gameObject);
         }
@@ -24,24 +32,26 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (gameObject.layer == LayerMask.NameToLayer("Enemy Bullet"))
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            if (collision.gameObject.CompareTag("Player"))
+            BossHealth boss = collision.gameObject.GetComponent<BossHealth>();
+            if (boss != null)
             {
-                PlayerHealth health = collision.gameObject.GetComponent<PlayerHealth>();
-                if (health != null) health.TakeDamage(1);
-                Destroy(gameObject);
-                return;
+                boss.TakeDamage(damage);
             }
+            Destroy(gameObject);
+            return;
         }
 
-        if (gameObject.layer == LayerMask.NameToLayer("PlayerBullet"))
+        if (collision.gameObject.CompareTag("Player"))
         {
-            if (collision.gameObject.CompareTag("Enemy"))
-            {     
-                Destroy(gameObject);
-                return;
+            PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+            if (player != null)
+            {
+                player.TakeDamage(1);
             }
+            Destroy(gameObject);
+            return;
         }
 
         Destroy(gameObject);

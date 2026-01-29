@@ -13,6 +13,7 @@ public class PlayerHealth : MonoBehaviour
     public void TakeDamage(float damage)
     {
         playerHealth -= damage;
+        AudioManager.instance.PlaySFX(AudioManager.instance.playerHit);
         Debug.Log("Player Health: " + playerHealth);
 
         if (playerHealth <= 0)

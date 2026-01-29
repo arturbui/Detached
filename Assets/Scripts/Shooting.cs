@@ -5,23 +5,30 @@ public class Shooting : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform shooting;
     public float bulletForce;
+
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             Shoot();
         }
     }
 
     void Shoot()
-
     {
+        // 1. Play the sound immediately when the button is pressed
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX(AudioManager.instance.playerBullet);
+        }
 
+        // 2. Spawn and launch the bullet
         GameObject bullet = Instantiate(bulletPrefab, shooting.position, shooting.rotation);
-
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
 
-        rb.AddForce(shooting.up * bulletForce, ForceMode2D.Impulse);
-
+        if (rb != null)
+        {
+            rb.AddForce(shooting.up * bulletForce, ForceMode2D.Impulse);
+        }
     }
 }
