@@ -13,8 +13,6 @@ public class AudioManager : MonoBehaviour
     public AudioClip playerBullet;
     public AudioClip enemyBullet;
     public AudioClip playerHit;
-    public AudioClip footsteps;
-    public AudioClip gateOpen;
     public AudioClip bossLazer;
     public AudioClip enemyHit;
 

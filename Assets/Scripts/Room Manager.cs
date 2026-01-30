@@ -51,15 +51,7 @@ public class RoomManager : MonoBehaviour
         roomCleared = true;
         Debug.Log("All Waves Cleared! Gate is opening.");
 
-        if (AudioManager.instance == null)
-        {
-            Debug.LogError("ROOM MANAGER ERROR: I can't find the AudioManager instance!");
-        }
-        else
-        {
-            Debug.Log("RoomManager is now calling PlaySFX...");
-            AudioManager.instance.PlaySFX(AudioManager.instance.gateOpen);
-        }
+        
 
         Animator anim = gate.GetComponent<Animator>();
         if (anim != null)
