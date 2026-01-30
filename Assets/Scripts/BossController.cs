@@ -12,14 +12,19 @@ public class BossController : MonoBehaviour
 
     [Header("Combat")]
     public float fireRate = 1.2f;
+    public float phase2FireRate = 0.8f; 
 
     private float nextFireTime;
     private Animator anim;
     private Vector3 lastPos;
+    private BossHealth healthScript; 
+    private bool isPhase2 = false;
 
     void Start()
     {
         anim = GetComponent<Animator>();
+        healthScript = GetComponent<BossHealth>(); 
+
         if (player == null) player = GameObject.FindGameObjectWithTag("Player").transform;
         lastPos = transform.position;
     }
@@ -27,6 +32,16 @@ public class BossController : MonoBehaviour
     void Update()
     {
         if (player == null) return;
+
+        if (!isPhase2 && healthScript != null)
+        {
+            if (healthScript.health <= (healthScript.maxHealth / 2))
+            {
+                isPhase2 = true;
+                fireRate = phase2FireRate;
+                Debug.Log("Boss Phase 2 Started!");
+            }
+        }
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
@@ -76,6 +91,19 @@ public class BossController : MonoBehaviour
         {
             AudioManager.instance.PlaySFX(AudioManager.instance.bossLazer);
         }
-        Instantiate(laserPrefab, firePoint.position, firePoint.rotation);
+
+        if (isPhase2)
+        {
+            for (int i = -1; i <= 1; i++)
+            {
+                float spreadAngle = i * 15f; 
+                Quaternion spreadRotation = firePoint.rotation * Quaternion.Euler(0, 0, spreadAngle);
+                Instantiate(laserPrefab, firePoint.position, spreadRotation);
+            }
+        }
+        else
+        {
+            Instantiate(laserPrefab, firePoint.position, firePoint.rotation);
+        }
     }
 }
